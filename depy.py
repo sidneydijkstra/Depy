@@ -4,92 +4,102 @@ import subprocess
 import argparse
 import logging
 
+import yaml
 import git
 
 # Import the Mailer class from the mailer module
 from mailing import Mailer
+# Import the Repository class from the repository module
+from repository import Repository
+# Import the Jobs class from the jobs module
+from jobs import Jobs
 
-# Set the path to the log file
-log_file = './log.txt'
+# Open the YAML file
+with open("depy.config.yaml", "r") as file:
+    # Load the contents of the file
+    config = yaml.safe_load(file)
 
-# Configure the logger
+# Get log file path and configure the logger
+log_file = './depy.log' if ('log_file' not in config) else config['log_file']
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %(message)s')
 
-# Parse command-line options
-parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--repo-path", required=True, help="path to the local repository")
-parser.add_argument("-u", "--repo-url", required=True, help="URL of the remote repository")
-parser.add_argument("-b", "--branch-name", required=True, help="name of the branch to clone")
-parser.add_argument("-is", "--init-script-path", required=True, help="path to the script to run on init")
-parser.add_argument("-ps", "--pull-script-path", required=True, help="path to the script to run on pull")
-parser.add_argument("-s", "--sleep-time", required=False, help="time to sleep after each repo check")
-parser.add_argument("-murl", "--mail-url", required=False, help="url to mail client")
-parser.add_argument("-musr", "--mail-user", required=False, help="user for mail client")
-parser.add_argument("-mpsw", "--mail-password", required=False, help="password for mail client")
-parser.add_argument("-mto", "--mail-to", required=False, help="user to mail status to")
-args = parser.parse_args()
+# Check repo variables
+if 'repository' not in config or 'path' not in config['repository'] or 'url' not in config['repository'] or 'branch' not in config['repository']:
+    raise ValueError("Missing required configuration parameters for the repository: path, url, branch")
 
-# Assign the arguments to the variables
-repo_path = args.repo_path
-repo_url = args.repo_url
-branch_name = args.branch_name
-init_script_path = args.init_script_path
-pull_script_path = args.pull_script_path
-sleep_time = args.sleep_time if args.sleep_time else 60
-mail_url = args.mail_url
-mail_user = args.mail_user
-mail_password = args.mail_password
-mail_to = args.mail_to
+# Create repo variables
+repo_path = config['repository']['path']
+repo_url = config['repository']['url']
+branch_name = config['repository']['branch']
+
+# Check mailer variables
+if 'mailer' in config and 'enable' in config['mailer'] and config['mailer']['enable']:
+    if 'url' not in config['mailer'] or 'user' not in config['mailer'] or 'password' not in config['mailer'] or 'to' not in config['mailer']:
+        raise ValueError("Missing required configuration parameters for mailing: url, user, password and to. Disable the mailing component or enter the required parameters")
+        
+# Create mailer variables
+mailer_enable = config['mailer']['enable']
+mailer_url = config['mailer']['url']
+mailer_user = config['mailer']['user']
+mailer_password = config['mailer']['password']
+mailer_to = config['mailer']['to']
+
+# Check stages and jobs variables
+if 'stages' not in config or 'jobs' not in config:
+    raise ValueError("Missing required configuration parameters for handling stages and jobs: stages, jobs")
+
+# Create stages and jobs variables
+init = config['init']
+stages = config['stages']
+jobs = config['jobs']
+
 
 # Create a Mailer object
-mailer = Mailer(mail_url, 587, mail_user, mail_password)
+mailer = Mailer(mailer_enable, mailer_url, 587, mailer_user, mailer_password)
+
+# Create a Repository object
+repo = Repository(repo_path, repo_url, branch_name)
+
+# Create a Jobs object
+jobs = Jobs(stages, jobs, repo)
 
 # Log varaibles
-logging.info(f"Starting Depy with variables: {{\n\trepo_path = {repo_path}\n\trepo_url = {repo_url}\n\tbranch_name = {branch_name}\n\tinit_script_path = {init_script_path}\n\tpull_script_path = {pull_script_path}\n\tsleep_time = {sleep_time}\n\tmail_url = {mail_url}\n\tmail_user = {mail_user}\n\tmail_to = {mail_to}\n}}")
+#logging.info(f"Starting Depy with variables: {{\n\trepo_path = {repo_path}\n\trepo_url = {repo_url}\n\tbranch_name = {branch_name}\n\tinit_script_path = {init_script_path}\n\tpull_script_path = {pull_script_path}\n\tsleep_time = {sleep_time}\n\tmail_url = {mail_url}\n\tmail_user = {mail_user}\n\tmail_to = {mail_to}\n}}")
 
-# Check if the repository already exists
-if not os.path.isdir(repo_path):
-    # Clone the repository
-    logging.info(f"Cloning repo from {repo_url} to directory {repo_path}")
-    git.Repo.clone_from(repo_url, repo_path, branch=branch_name)
-    logging.info(f"Cloning completed")
-    
-    # Run pull script
-    try:
+# Try to clone the repository
+if repo.tryClone():
+    if init:
+        # Run pull script
         logging.info(f"Running ssh init script {init_script_path}")
-        subprocess.run(["sh", init_script_path], cwd=repo_path)
-    except:
+        jobs.runSteps(init)
         logging.info(f"Not running ssh init script {init_script_path}")
-
-# Open the repository
-repo = git.Repo(repo_path)
 
 logging.info(f"Starting depy loop")
 
 # Enter an infinite loop
 while True:
-    # Fetch the latest changes from the remote repository
-    repo.remotes.origin.fetch()
-
-    # Compare the local and remote branches to see if there are any differences
-    local_sha = repo.head.object.hexsha
-    remote_sha = repo.remotes.origin.refs[branch_name].commit.hexsha
-
-    if local_sha != remote_sha:
+    # Try to fetch a new commit
+    if repo.tryFetch():
         # Pull the changes
-        repo.remotes.origin.pull()
         logging.info("Changes detected and pulled")
+        
+        logging.info("--Running jobs--")
+        jobs.tryRunJobs()
+        logging.info("--Jobs completed--")
     
+        # Get current time
         current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())
-        # Check if mail values are set
-        if mail_url and mail_user and mail_to:
-            # Send an email
-            mailer.send_email(
-                from_addr=mail_user,
-                to_addr=mail_to,
-                subject=f'New version pulled from remote branch ({repo_path})',
-                body=f'A new version was pulled from the remote branch at {current_time}\n\n'
-            )
+        # Send an email
+        mailingStatus = mailer.send_email(
+            from_addr=mailer_user,
+            to_addr=mailer_to,
+            subject=f'New version pulled from remote branch ({repo_path})',
+            body=f'A new version was pulled from the remote branch at {current_time}\n\n'
+        )
+
+        # Check if mail is send
+        if mailingStatus:
+            logging.info(f"Send mail to from {mail_user} to {mail_to}")
         #end if
 
         # Run pull script

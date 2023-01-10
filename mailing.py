@@ -5,13 +5,18 @@ from email.mime.multipart import MIMEMultipart
 import urllib.request
 
 class Mailer:
-    def __init__(self, server, port, email, password):
+    def __init__(self, enable, server, port, email, password):
+        self.enable = enable
         self.server = server
         self.port = port
         self.email = email
         self.password = password
 
     def send_email(self, from_addr, to_addr, subject, body, html=None):
+        # Check if mail is active
+        if not self.enable:
+            return False
+
         # Create an SMTP connection object
         conn = smtplib.SMTP(self.server, self.port)
 
@@ -47,3 +52,5 @@ class Mailer:
 
         # Close the SMTP connection
         conn.quit()
+
+        return True

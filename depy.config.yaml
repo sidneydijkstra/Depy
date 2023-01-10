@@ -1,0 +1,40 @@
+
+log_file: './depy.log'
+
+repository:
+  path: './_dclone'
+  url: 'https://github.com/sidneydijkstra/Depy/blob/main/depy.py'
+  branch: 'master'
+
+stages:
+  - pull
+  - test
+
+init: 
+  # Build the project using a specified script
+  - run: init_script.sh
+
+jobs:
+
+  pull:
+    steps:
+      # Pull out the repository
+      - pull
+      # Build the project using a specified script
+      - run: init_script.sh
+          
+  test:
+    steps:
+      # Run tests using the specified test command
+      - run: |
+          touch depytest.test
+          echo "this is a test"
+
+sleep_time: 60
+
+mailer:
+  enable: False
+  url: 'smtp.example.com'
+  user: 'user@example.com'
+  password: 'password'
+  to: 'recipient@example.com'
