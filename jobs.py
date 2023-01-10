@@ -26,7 +26,7 @@ class Jobs:
         """Run shell command"""
         if '\n' in command:
             print("string is a plain scalar string running command")
-            os.system(command)
+            os.system(command.replace("\n", " && "))
         elif '.sh' in command:
             print(f"string is not a plain scalar string running script {command}")
             #subprocess.run(["sh", command], cwd=self.repo.repo_path)
