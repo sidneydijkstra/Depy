@@ -30,7 +30,7 @@ class Jobs:
             os.system(parsedCommand)
         elif '.sh' in command:
             print(f"string is not a plain scalar string running script {command}")
-            subprocess.run(["sh", command], cwd=self.repo.repo_path)
+            subprocess.run(["bash", command], cwd=self.repo.repo_path)
         else:
             print(f"invalid command: {command}")
             
