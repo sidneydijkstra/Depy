@@ -27,10 +27,11 @@ jobs:
     steps:
       # Run tests using the specified test command
       - run: |
+          ls
           touch depytest.test
           echo "this is a test"
 
-sleep_time: 60
+sleep_time: 30
 
 mailer:
   enable: False

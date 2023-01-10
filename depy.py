@@ -53,6 +53,8 @@ init = config['init']
 stages = config['stages']
 jobs = config['jobs']
 
+sleep_time = config['sleep_time'] if 'sleep_time' in config else 60
+
 
 # Create a Mailer object
 mailer = Mailer(mailer_enable, mailer_url, 587, mailer_user, mailer_password)
@@ -103,5 +105,5 @@ while True:
         #end if
     #end if
 
-    time.sleep(60)
+    time.sleep(sleep_time)
 #end while
