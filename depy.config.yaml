@@ -1,10 +1,13 @@
 
+variables:
+  repo_branch: 'test'
+
 log_file: './depy.log'
 
 repository:
   path: './_dclone'
   url: 'https://github.com/sidneydijkstra/Depy.git'
-  branch: 'test'
+  branch: ${{ variables.repo_branch }}
 
 stages:
   - pull

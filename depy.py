@@ -15,9 +15,15 @@ from repository import Repository
 from jobs import Jobs
 
 # Open the YAML file
-with open("depy.config.yaml", "r") as file:
+with open("../Billy/depy.config.yaml", "r") as file:
     # Load the contents of the file
-    config = yaml.safe_load(file)
+    content = file.read()
+    config = yaml.safe_load(content)
+    if 'variables' in config:
+        for key, value in config['variables'].items():
+            content = content.replace("${{ variables."+key+" }}", value)
+            
+        config = yaml.safe_load(content)
 
 # Get log file path and configure the logger
 log_file = './depy.log' if ('log_file' not in config) else config['log_file']
@@ -72,9 +78,9 @@ jobs = Jobs(stages, jobs, repo)
 if repo.tryClone():
     if init:
         # Run pull script
-        logging.info(f"Running init steps")
-        jobs.runSteps(init)
-        logging.info(f"Completed init steps")
+        logging.info("--Running jobs--")
+        jobs.tryRunJobs()
+        logging.info("--Jobs completed--")
 
 logging.info(f"Starting depy loop")
 
