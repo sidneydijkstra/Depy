@@ -2,6 +2,8 @@ import os
 import time
 import subprocess
 
+import yaml
+
 class Jobs:
     def __init__(self, stages, jobs, repo):
         self.stages = stages
@@ -17,7 +19,7 @@ class Jobs:
     def handle_pull(self):
         """Implement repository pull action."""
         print("pulling repository")
-        repo.pull()
+        self.repo.pull()
         pass
 
     def handle_run(self, command):
@@ -27,7 +29,7 @@ class Jobs:
             os.system(command)
         else:
             print(f"string is not a plain scalar string running script {command}")
-            subprocess.run(["sh", command], cwd=repo.repo_path)
+            subprocess.run(["sh", command], cwd=self.repo.repo_path)
         
         
 
@@ -46,16 +48,16 @@ class Jobs:
     def runSteps(self, steps):
         # Iterate over the steps in the current stage
         for step in steps:
-            # Get the step name
-            step_name = list(step.keys())[0]
-            # Get the step arguments
-            step_args = step[step_name]
-            # Check if the step name exists in the step_handlers dictionary
-            if step_name in self.step_handlers:
-                # If it exists, call the corresponding function and pass the step_args
-                print(f"{step_name} is running with args: {step_args}. ")
-                self.step_handlers[step_name](step_args)
-                print(f"{step_name} is completed.")
-            else:
-                print(f"{step_name} is not a valid step.")
-                return False
+            if isinstance(step, dict):
+                step_name = list(step.keys())[0]
+                step_args = step[step_name]
+                if step_name in self.step_handlers:
+                    self.step_handlers[step_name](step_args)
+                else:
+                    print(f"{step_name} is not a valid step.")
+            elif isinstance(step, str):
+                step_name = step
+                if step_name in self.step_handlers:
+                    self.step_handlers[step_name]()
+                else:
+                    print(f"{step_name} is not a valid step.")
