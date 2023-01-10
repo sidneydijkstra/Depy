@@ -101,14 +101,6 @@ while True:
         if mailingStatus:
             logging.info(f"Send mail to from {mail_user} to {mail_to}")
         #end if
-
-        # Run pull script
-        try:
-            logging.info(f"Running ssh pull script {pull_script_path}")
-            subprocess.run(["sh", pull_script_path], cwd=repo_path)
-        except:
-            logging.info(f"Not running ssh pull script {pull_script_path}")
-        #end try
     #end if
 
     time.sleep(60)
