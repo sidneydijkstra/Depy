@@ -25,8 +25,9 @@ class Jobs:
     def handle_run(self, command):
         """Run shell command"""
         if '\n' in command:
-            print("string is a plain scalar string running command")
-            os.system(command.replace("\n", " && "))
+            parsedCommand = command.rstrip().replace("\n", " && ")
+            print(f"string is a plain scalar string running command: {parsedCommand}")
+            os.system(parsedCommand)
         elif '.sh' in command:
             print(f"string is not a plain scalar string running script {command}")
             #subprocess.run(["sh", command], cwd=self.repo.repo_path)
