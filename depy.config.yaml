@@ -27,6 +27,7 @@ jobs:
     steps:
       # Run tests using the specified test command
       - run: |
+          dir
           ls
           touch depytest.test
           echo "this is a test"
