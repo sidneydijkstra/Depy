@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Save current branch name
-current_branch=$(git rev-parse --abbrev-ref HEAD)
+# Get the current commit hash
+current_commit=$(git rev-parse HEAD)
 
-# Get a list of branches, including remote branches, and switch to the previous one
-git checkout $(git for-each-ref --count=2 --sort=-committerdate refs/heads/ --format='%(refname:short)' | tail -n1)
+# Switch to the previous commit
+git reset --hard HEAD~1
 
-# Show current branch name
-echo "Switched to previous branch: $(git rev-parse --abbrev-ref HEAD)"
+# Show the new commit hash
+echo "Switched to previous commit: $(git rev-parse HEAD)"
 
-# Display message if current branch is the same as the previous one
-if [ "$current_branch" == "$(git rev-parse --abbrev-ref HEAD)" ]; then
-  echo "You were already on the latest branch"
+# Display message if current commit and the previous one are the same
+if [ "$current_commit" == "$(git rev-parse HEAD)" ]; then
+  echo "You were already on the latest commit"
 fi
