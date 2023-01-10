@@ -3,8 +3,8 @@ log_file: './depy.log'
 
 repository:
   path: './_dclone'
-  url: 'https://github.com/sidneydijkstra/Depy/blob/main/depy.py'
-  branch: 'master'
+  url: 'https://github.com/sidneydijkstra/Depy.git'
+  branch: 'test'
 
 stages:
   - pull

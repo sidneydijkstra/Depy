@@ -70,9 +70,9 @@ jobs = Jobs(stages, jobs, repo)
 if repo.tryClone():
     if init:
         # Run pull script
-        logging.info(f"Running ssh init script {init_script_path}")
+        logging.info(f"Running init steps")
         jobs.runSteps(init)
-        logging.info(f"Not running ssh init script {init_script_path}")
+        logging.info(f"Completed init steps")
 
 logging.info(f"Starting depy loop")
 
