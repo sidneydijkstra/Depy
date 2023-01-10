@@ -24,13 +24,15 @@ class Jobs:
 
     def handle_run(self, command):
         """Run shell command"""
-        if type(command) is yaml.scalarstring.PlainScalarString:
+        if '\n' in command:
             print("string is a plain scalar string running command")
             os.system(command)
-        else:
+        elif '.sh' in command:
             print(f"string is not a plain scalar string running script {command}")
             subprocess.run(["sh", command], cwd=self.repo.repo_path)
-        
+        else:
+            print(f"invalid command: {command}")
+            
         
 
     def tryRunJobs(self):
