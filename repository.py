@@ -8,6 +8,18 @@ class Repository:
         self.branch_name = branch_name
         self.repo = None
 
+    def getCommitId(self):
+        # Open the repository
+        repo = git.Repo(self.repo_path)
+        # Return the current commit id
+        return repo.head.commit.hexsha
+
+    def getCommitMessage(self):
+        # Open the repository
+        repo = git.Repo(self.repo_path)
+        # Return the current commit message
+        return repo.head.commit.message
+
     # Try to clone a repository if its not already cloned
     def tryClone(self):
         # Check if the repository already exists

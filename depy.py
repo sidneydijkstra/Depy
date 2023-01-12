@@ -7,6 +7,9 @@ import logging
 import yaml
 import git
 
+# Import the stamper module
+import stamper
+
 # Import the Mailer class from the mailer module
 from mailing import Mailer
 # Import the Repository class from the repository module
@@ -15,7 +18,7 @@ from repository import Repository
 from jobs import Jobs
 
 # Open the YAML file
-with open("../Billy/depy.config.yaml", "r") as file:
+with open("./depy.config.yaml", "r") as file:
     # Load the contents of the file
     content = file.read()
     config = yaml.safe_load(content)
@@ -26,8 +29,11 @@ with open("../Billy/depy.config.yaml", "r") as file:
         config = yaml.safe_load(content)
 
 # Get log file path and configure the logger
-log_file = './depy.log' if ('log_file' not in config) else config['log_file']
-logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s %(message)s')
+log_path = './depy.log' if ('log_path' not in config) else config['log_path']
+logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
+
+# Get stamp file path
+stamp_path = './depy.stamp' if ('stamp_path' not in config) else config['stamp_path']
 
 # Check repo variables
 if 'repository' not in config or 'path' not in config['repository'] or 'url' not in config['repository'] or 'branch' not in config['repository']:
@@ -55,10 +61,10 @@ if 'stages' not in config or 'jobs' not in config:
     raise ValueError("Missing required configuration parameters for handling stages and jobs: stages, jobs")
 
 # Create stages and jobs variables
-init = config['init']
 stages = config['stages']
 jobs = config['jobs']
 
+# Create sleep_time variable
 sleep_time = config['sleep_time'] if 'sleep_time' in config else 60
 
 
@@ -76,11 +82,13 @@ jobs = Jobs(stages, jobs, repo)
 
 # Try to clone the repository
 if repo.tryClone():
-    if init:
-        # Run pull script
-        logging.info("--Running jobs--")
-        jobs.tryRunJobs()
-        logging.info("--Jobs completed--")
+    # Run pull script
+    logging.info("--Running jobs--")
+    jobs.tryRunJobs()
+    logging.info("--Jobs completed--")
+
+    # Create a new depy stamp
+    stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
 
 logging.info(f"Starting depy loop")
 
@@ -109,6 +117,9 @@ while True:
         if mailingStatus:
             logging.info(f"Send mail to from {mail_user} to {mail_to}")
         #end if
+
+        # Create a new depy stamp
+        stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
     #end if
 
     time.sleep(sleep_time)

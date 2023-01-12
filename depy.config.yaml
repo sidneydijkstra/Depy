@@ -1,24 +1,20 @@
 
 variables:
-  repo_branch: 'test'
+  repo_path: './_dclone'
 
-log_file: './depy.log'
+log_path: './depy.log'
+stamp_path: '${{ variables.repo_path }}/depy.stamp'
 
 repository:
-  path: './_dclone'
+  path: ${{ variables.repo_path }}
   url: 'https://github.com/sidneydijkstra/Depy.git'
-  branch: ${{ variables.repo_branch }}
+  branch: test
 
 stages:
   - pull
   - test
 
-init: 
-  # Build the project using a specified script
-  - run: init_script.sh
-
 jobs:
-
   pull:
     steps:
       # Pull out the repository
@@ -30,8 +26,6 @@ jobs:
     steps:
       # Run tests using the specified test command
       - run: |
-          ls
-          touch depytest.test
           echo "this is a test"
 
 sleep_time: 30
