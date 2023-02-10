@@ -40,6 +40,7 @@ if 'repository' not in config or 'path' not in config['repository'] or 'url' not
     raise ValueError("Missing required configuration parameters for the repository: path, url, branch")
 
 # Create repo variables
+repo_init = config['repository']['init'] if 'init' in config['repository'] else False
 repo_path = config['repository']['path']
 repo_url = config['repository']['url']
 branch_name = config['repository']['branch']
@@ -80,15 +81,16 @@ jobs = Jobs(stages, jobs, repo)
 # Log varaibles
 #logging.info(f"Starting Depy with variables: {{\n\trepo_path = {repo_path}\n\trepo_url = {repo_url}\n\tbranch_name = {branch_name}\n\tinit_script_path = {init_script_path}\n\tpull_script_path = {pull_script_path}\n\tsleep_time = {sleep_time}\n\tmail_url = {mail_url}\n\tmail_user = {mail_user}\n\tmail_to = {mail_to}\n}}")
 
-# Try to clone the repository
-if repo.tryClone():
-    # Run pull script
-    logging.info("--Running jobs--")
-    jobs.tryRunJobs()
-    logging.info("--Jobs completed--")
+# Try to clone the repository if init is active
+if repo_init:
+    if repo.tryClone():
+        # Run pull script
+        logging.info("--Running jobs--")
+        jobs.tryRunJobs()
+        logging.info("--Jobs completed--")
 
-    # Create a new depy stamp
-    stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
+        # Create a new depy stamp
+        stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
 
 logging.info(f"Starting depy loop")
 

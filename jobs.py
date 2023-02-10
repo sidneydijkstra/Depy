@@ -12,27 +12,51 @@ class Jobs:
         # Define the step_handlers dictionary as a class variable
         # This maps step names to the corresponding functions that should be called
         self.step_handlers = {
-            'pull': self.handle_pull,
             'run': self.handle_run,
+            'pull': self.handle_pull,
+            'bash': self.handle_bash,
+            'touch': self.handle_touch,
+            'service-stop': self.handle_serviceStop,
+            'service-start': self.handle_serviceStart,
+            'service-restart': self.handle_serviceRestart,
         }
 
     def handle_pull(self):
-        """Implement repository pull action."""
         print("pulling repository")
         self.repo.pull()
         pass
 
     def handle_run(self, command):
-        """Run shell command"""
         if '\n' in command:
             parsedCommand = command.rstrip().replace("\n", " && ")
             print(f"string is a plain scalar string running command: {parsedCommand}")
             os.system(parsedCommand)
-        elif '.sh' in command:
+        else:
+            print(f"invalid command: {command}")
+
+    def handle_bash(self, command):
+        if '.sh' in command:
             print(f"string is not a plain scalar string running script {command}")
             subprocess.run(["bash", command], cwd=self.repo.repo_path)
         else:
             print(f"invalid command: {command}")
+            
+    def handle_touch(self, command):
+        print(f"invalid command: {command}")
+            
+    def handle_serviceStop(self, command):
+        print(f"string is not a plain scalar string running script {command}")
+        subprocess.run(["systemctl stop", command])
+        subprocess.run(["systemctl daemon-reload"])
+        
+    def handle_serviceStart(self, command):
+        print(f"string is not a plain scalar string running script {command}")
+        subprocess.run(["systemctl daemon-reload"])
+        subprocess.run(["systemctl start", command])
+        
+    def handle_serviceRestart(self, command):
+        print(f"string is not a plain scalar string running script {command}")
+        subprocess.run(["systemctl restart", command])
             
         
 
