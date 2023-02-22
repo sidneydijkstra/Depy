@@ -38,7 +38,7 @@ with open(config_path, "r") as file:
         config = yaml.safe_load(content)
 
 # Get log file path and configure the logger
-log_path = './depy.log' if ('log_path' not in config) else config['log_path']
+log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else f"{repo_path}/{config['log_path']}"
 logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 
 # Get stamp file path
@@ -137,7 +137,7 @@ while True:
         #end if
 
         # Create a new depy stamp
-        stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
+        stamper.stamp(f"{repo_path}/{stamp_path}", branch_name, repo.getCommitId(), repo.getCommitMessage())
     #end if
 
     time.sleep(sleep_time)
