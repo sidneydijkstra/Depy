@@ -21,7 +21,7 @@ class Jobs:
             'service-stop': self.handle_serviceStop,
             'service-start': self.handle_serviceStart,
             'service-restart': self.handle_serviceRestart,
-            'service-enable': self.handle_serviceRestart,
+            'service-enable': self.handle_serviceEnable,
         }
 
     def handle_pull(self):
@@ -60,19 +60,17 @@ class Jobs:
         description = command['description']
         command = command['command']
 
-        content = f"""
-            [Unit]
-            Description={description}
+        content = f"""[Unit]
+Description={description}
 
-            [Service]
-            WorkingDirectory={directory}
-            ExecStart={command}
-            Restart=always
-            RestartSec=3
+[Service]
+WorkingDirectory={directory}
+ExecStart={command}
+Restart=always
+RestartSec=3
 
-            [Install]
-            WantedBy=multi-user.target
-        """
+[Install]
+WantedBy=multi-user.target"""
         
         subprocess.run([f"echo '{content}' > /etc/systemd/system/{name}"], shell=True)
 
