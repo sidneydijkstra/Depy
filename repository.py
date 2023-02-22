@@ -8,16 +8,21 @@ class Repository:
         self.branch_name = branch_name
         self.repo = None
 
+        self.ci = ""
+        self.cm = ""
+
     def getCommitId(self):
         # Open the repository
         repo = git.Repo(self.repo_path)
         # Return the current commit id
+        return self.ci
         return repo.remotes.origin.refs[self.branch_name].commit.hexsha
 
     def getCommitMessage(self):
         # Open the repository
         repo = git.Repo(self.repo_path)
         # Return the current commit message
+        return self.cm
         return repo.remotes.origin.refs[self.branch_name].commit.message
 
     # Try to clone a repository if its not already cloned
@@ -41,6 +46,9 @@ class Repository:
             # Compare the local and remote branches to see if there are any differences
             local_sha = repo.head.object.hexsha
             remote_sha = repo.remotes.origin.refs[self.branch_name].commit.hexsha
+
+            self.ci = repo.remotes.origin.refs[self.branch_name].commit.hexsha
+            self.cm = repo.remotes.origin.refs[self.branch_name].commit.hexsha
 
             # return state of repository
             return local_sha != remote_sha
