@@ -94,7 +94,7 @@ if repo_init:
         jobs.tryRunJobs()
 
         # Create a new depy stamp
-        stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
+        stamper.stamp(f"{repo_path}/{stamp_path}", branch_name, repo.getCommitId(), repo.getCommitMessage())
     elif repo_forceRebuild:
         # Run pull script
         jobs.tryRunJobs()
