@@ -25,7 +25,6 @@ args = parser.parse_args()
 
 # Get depy config location
 config_path = args.file
-print(config_path)
 
 # Open the YAML file
 with open(config_path, "r") as file:
@@ -93,6 +92,7 @@ jobs = Jobs(stages, jobs, repo)
 #logging.info(f"Starting Depy with variables: {{\n\trepo_path = {repo_path}\n\trepo_url = {repo_url}\n\tbranch_name = {branch_name}\n\tinit_script_path = {init_script_path}\n\tpull_script_path = {pull_script_path}\n\tsleep_time = {sleep_time}\n\tmail_url = {mail_url}\n\tmail_user = {mail_user}\n\tmail_to = {mail_to}\n}}")
 
 # Try to clone the repository if init is active
+print('All services started correctly')
 if repo_init:
     if repo.tryClone():
         # Run pull script
