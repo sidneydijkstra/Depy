@@ -31,8 +31,8 @@ class Jobs:
 
     def handle_run(self, command):
         if '\n' in command:
-            print(f"string is a plain scalar string running command: {parsedCommand}")
             parsedCommand = command.rstrip().replace("\n", " && ")
+            print(f"string is a plain scalar string running command: {parsedCommand}")
             os.system(parsedCommand)
         else:
             print(f"invalid command: {command}")
