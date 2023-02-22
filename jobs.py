@@ -77,18 +77,18 @@ class Jobs:
         subprocess.run(["echo", content, f"> /etc/systemd/system/{name}"])
 
     def handle_serviceStop(self, command):
-        subprocess.run(["systemctl stop", command])
-        subprocess.run(["systemctl daemon-reload"])
+        subprocess.run([f"systemctl stop {command}"], shell=True)
+        subprocess.run(["systemctl daemon-reload"], shell=True)
         
     def handle_serviceStart(self, command):
-        subprocess.run(["systemctl daemon-reload"])
-        subprocess.run(["systemctl start", command])
+        subprocess.run(["systemctl daemon-reload"], shell=True)
+        subprocess.run([f"systemctl start {command}"], shell=True)
         
     def handle_serviceRestart(self, command):
-        subprocess.run(["systemctl restart", command])
+        subprocess.run([f"systemctl restart {command}"], shell=True)
             
     def handle_serviceEnable(self, command):
-        subprocess.run(["systemctl enable", command])
+        subprocess.run([f"systemctl enable {command}"], shell=True)
 
     def tryRunJobs(self):
         # Iterate over the stages
