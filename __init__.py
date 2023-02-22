@@ -69,7 +69,7 @@ stages = config['stages']
 jobs = config['jobs']
 
 # Get stamp file path
-stamp_path = f'{repo_path}/depy.stamp' if ('stamp_path' not in config) else f"{repo_path}/{config['stamp_path']}"
+stamp_path = f'{repo_path}/depy.stamp' if ('stamp_path' not in config) else config['stamp_path']
 
 # Create sleep_time variable
 sleep_time = config['sleep_time'] if 'sleep_time' in config else 60
@@ -100,7 +100,7 @@ if repo_init:
         jobs.tryRunJobs()
 
 # Get log file path and configure the logger
-log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else f"{repo_path}/{config['log_path']}"
+log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else config['log_path']
 logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 
 logging.info(f"Starting depy loop")
