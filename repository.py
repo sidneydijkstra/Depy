@@ -12,13 +12,13 @@ class Repository:
         # Open the repository
         repo = git.Repo(self.repo_path)
         # Return the current commit id
-        return repo.head.commit.hexsha
+        return repo.remotes.origin.refs[self.branch_name].commit.hexsha
 
     def getCommitMessage(self):
         # Open the repository
         repo = git.Repo(self.repo_path)
         # Return the current commit message
-        return repo.head.commit.message
+        return repo.remotes.origin.refs[self.branch_name].commit.message
 
     # Try to clone a repository if its not already cloned
     def tryClone(self):
