@@ -132,9 +132,6 @@ while True:
         #end if
 
         # Create a new depy stamp
-        print('sleep for repo to update')
-        time.sleep(5)
-        print('upd')
         stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
     #end if
 
