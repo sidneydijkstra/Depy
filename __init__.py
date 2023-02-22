@@ -37,10 +37,6 @@ with open(config_path, "r") as file:
             
         config = yaml.safe_load(content)
 
-# Get log file path and configure the logger
-log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else f"{repo_path}/{config['log_path']}"
-logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
-
 # Get stamp file path
 stamp_path = './depy.stamp' if ('stamp_path' not in config) else config['stamp_path']
 
@@ -78,6 +74,9 @@ jobs = config['jobs']
 # Create sleep_time variable
 sleep_time = config['sleep_time'] if 'sleep_time' in config else 60
 
+# Get log file path and configure the logger
+log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else f"{repo_path}/{config['log_path']}"
+logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 
 # Create a Mailer object
 mailer = Mailer(mailer_enable, mailer_url, 587, mailer_user, mailer_password)
