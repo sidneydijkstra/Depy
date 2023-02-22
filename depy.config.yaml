@@ -6,6 +6,8 @@ log_path: './depy.log'
 stamp_path: '${{ variables.repo_path }}/depy.stamp'
 
 repository:
+  force_rebuild: true
+  init: true
   path: ${{ variables.repo_path }}
   url: 'https://github.com/sidneydijkstra/Depy.git'
   branch: test
@@ -18,17 +20,21 @@ jobs:
   pull:
     steps:
       # Pull out the repository
-      - pull
+      #- pull
       # Build the project using a specified script
-      - run: init_script.sh
-          
+      #- run: init_script.sh
+      - service-create:
+          name: myservice
+          directory: /var/myservice
+          description: The description of myservice
+          command: sudo python ./myservice.py
   test:
     steps:
       # Run tests using the specified test command
-      - run: |
-          echo "this is a test"
+      #- run: |
+      #    echo "this is a test"
 
-sleep_time: 30
+sleep_time: 5
 
 mailer:
   enable: False

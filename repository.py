@@ -31,18 +31,22 @@ class Repository:
         return False
 
     def tryFetch(self):
-        # Get the repository
-        repo = git.Repo(self.repo_path)
+        try:
+            # Get the repository
+            repo = git.Repo(self.repo_path)
 
-        # Fetch the latest changes from the remote repository
-        repo.remotes.origin.fetch()
+            # Fetch the latest changes from the remote repository
+            repo.remotes.origin.fetch()
 
-        # Compare the local and remote branches to see if there are any differences
-        local_sha = repo.head.object.hexsha
-        remote_sha = repo.remotes.origin.refs[self.branch_name].commit.hexsha
+            # Compare the local and remote branches to see if there are any differences
+            local_sha = repo.head.object.hexsha
+            remote_sha = repo.remotes.origin.refs[self.branch_name].commit.hexsha
 
-        # return state of repository
-        return local_sha != remote_sha
+            # return state of repository
+            return local_sha != remote_sha
+        except:
+            return False
+        
 
     def pull(self):
         # Get the repository

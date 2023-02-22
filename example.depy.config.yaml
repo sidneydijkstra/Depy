@@ -1,0 +1,50 @@
+
+variables:
+  repo_path: './_dclone'
+
+log_path: './depy.log'
+stamp_path: '${{ variables.repo_path }}/depy.stamp'
+
+repository:
+  force_rebuild: false
+  init: true
+  path: ${{ variables.repo_path }}
+  url: 'https://github.com/gituser/myproject.git'
+  branch: main
+
+stages:
+  - build
+  - service
+  - test
+
+jobs:
+  build:
+    steps:
+      - service-stop: myproject
+      - pull
+      - run: |
+          cp ${{ variables.repo_path }} /var/myproject
+  service:
+    steps:
+      - service-create:
+          name: myproject
+          directory: /var/myproject
+          description: The description of myproject
+          command: sudo python /var/myproject/__init__.py
+      - service-enable: myproject
+      - service-start: myproject
+  test:
+    steps:
+      - run: |
+          echo "started test!"
+          sudo python /var/myproject/__test__.py /var/myproject/output.test.txt
+          echo "stopped test!"
+
+sleep_time: 30
+
+mailer:
+  enable: False
+  url: 'smtp.example.com'
+  user: 'user@example.com'
+  password: 'password'
+  to: 'recipient@example.com'

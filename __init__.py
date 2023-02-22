@@ -1,5 +1,6 @@
 import os
 import time
+import argparse
 import subprocess
 import argparse
 import logging
@@ -17,8 +18,17 @@ from repository import Repository
 # Import the Jobs class from the jobs module
 from jobs import Jobs
 
+# Setup command arguments
+parser = argparse.ArgumentParser(description='Depy CI/CD')
+parser.add_argument("--file", required=False, help="Path to depy config gile", default="./depy.config.yaml")
+args = parser.parse_args()
+
+# Get depy config location
+config_path = args.file
+print(config_path)
+
 # Open the YAML file
-with open("./depy.config.yaml", "r") as file:
+with open(config_path, "r") as file:
     # Load the contents of the file
     content = file.read()
     config = yaml.safe_load(content)
@@ -41,6 +51,7 @@ if 'repository' not in config or 'path' not in config['repository'] or 'url' not
 
 # Create repo variables
 repo_init = config['repository']['init'] if 'init' in config['repository'] else False
+repo_forceRebuild = config['repository']['force_rebuild'] if 'force_rebuild' in config['repository'] else False
 repo_path = config['repository']['path']
 repo_url = config['repository']['url']
 branch_name = config['repository']['branch']
@@ -91,6 +102,11 @@ if repo_init:
 
         # Create a new depy stamp
         stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
+    elif repo_forceRebuild:
+        # Run pull script
+        logging.info("--Running jobs--")
+        jobs.tryRunJobs()
+        logging.info("--Jobs completed--")
 
 logging.info(f"Starting depy loop")
 
