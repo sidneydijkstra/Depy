@@ -74,10 +74,6 @@ jobs = config['jobs']
 # Create sleep_time variable
 sleep_time = config['sleep_time'] if 'sleep_time' in config else 60
 
-# Get log file path and configure the logger
-log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else f"{repo_path}/{config['log_path']}"
-logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
-
 # Create a Mailer object
 mailer = Mailer(mailer_enable, mailer_url, 587, mailer_user, mailer_password)
 
@@ -95,17 +91,17 @@ print('All services started correctly')
 if repo_init:
     if repo.tryClone():
         # Run pull script
-        logging.info("--Running jobs--")
         jobs.tryRunJobs()
-        logging.info("--Jobs completed--")
 
         # Create a new depy stamp
         stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
     elif repo_forceRebuild:
         # Run pull script
-        logging.info("--Running jobs--")
         jobs.tryRunJobs()
-        logging.info("--Jobs completed--")
+
+# Get log file path and configure the logger
+log_path = f"{repo_path}/depy.log" if ('log_path' not in config) else f"{repo_path}/{config['log_path']}"
+logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 
 logging.info(f"Starting depy loop")
 
