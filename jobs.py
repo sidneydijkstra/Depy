@@ -74,7 +74,7 @@ class Jobs:
             WantedBy=multi-user.target
         """
         
-        subprocess.run(["echo", content, f"> /etc/systemd/system/{name}"])
+        subprocess.run([f"echo '{content}' > /etc/systemd/system/{name}"], shell=True)
 
     def handle_serviceStop(self, command):
         subprocess.run([f"systemctl stop {command}"], shell=True)
