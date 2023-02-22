@@ -10,11 +10,11 @@ class Repository:
 
     def getCommitId(self):
         # Return the current commit id
-        return repo.head.commit.hexsha
+        return self.repo.head.commit.hexsha
 
     def getCommitMessage(self):
         # Return the current commit message
-        return repo.head.commit.message
+        return self.repo.head.commit.message
 
     # Try to clone a repository if its not already cloned
     def tryClone(self):
@@ -28,21 +28,21 @@ class Repository:
 
     def tryFetch(self):
         # Get the repository
-        repo = git.Repo(self.repo_path)
+        self.repo = git.Repo(self.repo_path)
 
         # Fetch the latest changes from the remote repository
-        repo.remotes.origin.fetch()
+        self.repo.remotes.origin.fetch()
 
         # Compare the local and remote branches to see if there are any differences
-        local_sha = repo.head.object.hexsha
-        remote_sha = repo.remotes.origin.refs[self.branch_name].commit.hexsha
+        local_sha = self.repo.head.object.hexsha
+        remote_sha = self.repo.remotes.origin.refs[self.branch_name].commit.hexsha
 
         # return state of repository
         return local_sha != remote_sha
 
     def pull(self):
         # Get the repository
-        repo = git.Repo(self.repo_path)
+        self.repo = git.Repo(self.repo_path)
         # Pull any changes
-        repo.remotes.origin.pull()
+        self.repo.remotes.origin.pull()
     
