@@ -9,4 +9,4 @@ def stamp(filePath, branchName, commitId, commitMessage):
         file.write(f"Time: {current_time}\n")
         file.write(f"Commit: {commitId}\n")
         file.write(f"Branch: {branchName}\n")
-        file.write(f"{commitMessage}\n")
+        file.write(f"{commitMessage}")

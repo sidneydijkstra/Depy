@@ -32,14 +32,14 @@ class Jobs:
     def handle_run(self, command):
         if '\n' in command:
             parsedCommand = command.rstrip().replace("\n", " && ")
-            print(f"string is a plain scalar string running command: {parsedCommand}")
+            #print(f"string is a plain scalar string running command: {parsedCommand}")
             os.system(parsedCommand)
         else:
             print(f"invalid command: {command}")
 
     def handle_bash(self, command):
         if '.sh' in command:
-            print(f"string is not a plain scalar string running script {command}")
+            #print(f"string is not a plain scalar string running script {command}")
             subprocess.run(["bash", command], cwd=self.repo.repo_path)
         else:
             print(f"invalid command: {command}")
