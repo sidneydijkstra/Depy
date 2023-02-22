@@ -37,9 +37,6 @@ with open(config_path, "r") as file:
             
         config = yaml.safe_load(content)
 
-# Get stamp file path
-stamp_path = './depy.stamp' if ('stamp_path' not in config) else config['stamp_path']
-
 # Check repo variables
 if 'repository' not in config or 'path' not in config['repository'] or 'url' not in config['repository'] or 'branch' not in config['repository']:
     raise ValueError("Missing required configuration parameters for the repository: path, url, branch")
@@ -71,6 +68,9 @@ if 'stages' not in config or 'jobs' not in config:
 stages = config['stages']
 jobs = config['jobs']
 
+# Get stamp file path
+stamp_path = f'{repo_path}/depy.stamp' if ('stamp_path' not in config) else f"{repo_path}/{config['stamp_path']}"
+
 # Create sleep_time variable
 sleep_time = config['sleep_time'] if 'sleep_time' in config else 60
 
@@ -94,7 +94,7 @@ if repo_init:
         jobs.tryRunJobs()
 
         # Create a new depy stamp
-        stamper.stamp(f"{repo_path}/{stamp_path}", branch_name, repo.getCommitId(), repo.getCommitMessage())
+        stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
     elif repo_forceRebuild:
         # Run pull script
         jobs.tryRunJobs()
@@ -132,7 +132,7 @@ while True:
         #end if
 
         # Create a new depy stamp
-        stamper.stamp(f"{repo_path}/{stamp_path}", branch_name, repo.getCommitId(), repo.getCommitMessage())
+        stamper.stamp(stamp_path, branch_name, repo.getCommitId(), repo.getCommitMessage())
     #end if
 
     time.sleep(sleep_time)

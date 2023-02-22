@@ -2,8 +2,8 @@
 variables:
   repo_path: './_dclone'
 
-log_path: './depy.log'
-stamp_path: '${{ variables.repo_path }}/depy.stamp'
+log_path: 'depy.log'
+stamp_path: 'depy.stamp'
 
 repository:
   force_rebuild: true
