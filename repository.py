@@ -8,22 +8,13 @@ class Repository:
         self.branch_name = branch_name
         self.repo = None
 
-        self.ci = ""
-        self.cm = ""
-
     def getCommitId(self):
-        # Open the repository
-        repo = git.Repo(self.repo_path)
         # Return the current commit id
-        return self.ci
-        return repo.remotes.origin.refs[self.branch_name].commit.hexsha
+        return repo.head.commit.hexsha
 
     def getCommitMessage(self):
-        # Open the repository
-        repo = git.Repo(self.repo_path)
         # Return the current commit message
-        return self.cm
-        return repo.remotes.origin.refs[self.branch_name].commit.message
+        return repo.head.commit.message
 
     # Try to clone a repository if its not already cloned
     def tryClone(self):
@@ -36,25 +27,18 @@ class Repository:
         return False
 
     def tryFetch(self):
-        try:
-            # Get the repository
-            repo = git.Repo(self.repo_path)
+        # Get the repository
+        repo = git.Repo(self.repo_path)
 
-            # Fetch the latest changes from the remote repository
-            repo.remotes.origin.fetch()
+        # Fetch the latest changes from the remote repository
+        repo.remotes.origin.fetch()
 
-            # Compare the local and remote branches to see if there are any differences
-            local_sha = repo.head.object.hexsha
-            remote_sha = repo.remotes.origin.refs[self.branch_name].commit.hexsha
+        # Compare the local and remote branches to see if there are any differences
+        local_sha = repo.head.object.hexsha
+        remote_sha = repo.remotes.origin.refs[self.branch_name].commit.hexsha
 
-            self.ci = repo.remotes.origin.refs[self.branch_name].commit.hexsha
-            self.cm = repo.remotes.origin.refs[self.branch_name].commit.hexsha
-
-            # return state of repository
-            return local_sha != remote_sha
-        except:
-            return False
-        
+        # return state of repository
+        return local_sha != remote_sha
 
     def pull(self):
         # Get the repository
